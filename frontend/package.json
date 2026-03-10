@@ -1,0 +1,31 @@
+{
+  "name": "ticman-frontend",
+  "version": "0.1.0",
+  "description": "TICman — Team Interactive Client Manager",
+  "productName": "TICman",
+  "scripts": {
+    "dev": "quasar dev",
+    "build": "quasar build",
+    "lint": "eslint --ext .js,.ts,.vue ./src"
+  },
+  "dependencies": {
+    "@quasar/extras": "^1.16.12",
+    "pinia": "^2.1.7",
+    "quasar": "^2.16.9",
+    "vue": "^3.4.18",
+    "vue-router": "^4.3.0"
+  },
+  "devDependencies": {
+    "@quasar/app-vite": "^1.9.0",
+    "@types/node": "^20.11.5",
+    "@vue/eslint-config-typescript": "^12.0.0",
+    "eslint": "^8.57.0",
+    "eslint-plugin-vue": "^9.21.1",
+    "typescript": "^5.3.3",
+    "vue-tsc": "^2.0.7"
+  },
+  "engines": {
+    "node": "^25 || ^24 || ^22 || ^20 || ^18 || ^16",
+    "npm": ">= 6.13.4"
+  }
+}
