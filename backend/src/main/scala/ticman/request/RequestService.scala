@@ -1,7 +1,5 @@
-package ticman.services
+package ticman.request
 
-import ticman.db.RequestRepository
-import ticman.models.{HttpRequest, RequestResponse, SaveRequestRequest}
 import java.util.UUID
 
 trait RequestService:

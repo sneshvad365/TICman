@@ -1,17 +1,19 @@
 package ticman
 
-import ticman.db.*
-import ticman.services.*
-import ticman.routes.*
+import ticman.db.Database
+import ticman.workspace.*
+import ticman.collection.*
+import ticman.request.*
+import ticman.proxy.*
 
 object Main extends cask.Main:
 
-  private val dataSource = Database.fromEnv()
+  private val db = Database.fromEnv()
 
-  private val workspaceRepo  = PostgresWorkspaceRepository(dataSource)
-  private val collectionRepo = PostgresCollectionRepository(dataSource)
-  private val requestRepo    = PostgresRequestRepository(dataSource)
-  private val historyRepo    = PostgresResponseHistoryRepository(dataSource)
+  private val workspaceRepo  = PostgresWorkspaceRepository(db)
+  private val collectionRepo = PostgresCollectionRepository(db)
+  private val requestRepo    = PostgresRequestRepository(db)
+  private val historyRepo    = PostgresResponseHistoryRepository(db)
 
   private val workspaceService  = WorkspaceServiceImpl(workspaceRepo)
   private val collectionService = CollectionServiceImpl(collectionRepo)

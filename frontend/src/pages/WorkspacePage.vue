@@ -76,7 +76,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { useCollectionsStore } from 'stores/collections'
@@ -88,15 +88,15 @@ const $q = useQuasar()
 const store = useCollectionsStore()
 const workspacesStore = useWorkspacesStore()
 
-const workspaceId = route.params.id as string
-const workspace = computed(() => workspacesStore.workspaces.find(w => w.id === workspaceId))
+const workspaceId = computed(() => route.params.id as string)
+const workspace = computed(() => workspacesStore.workspaces.find(w => w.id === workspaceId.value))
 
 const showDialog = ref(false)
 const newName = ref('')
 const newReadme = ref('')
 const creating = ref(false)
 
-onMounted(() => store.fetchForWorkspace(workspaceId))
+watch(workspaceId, id => store.fetchForWorkspace(id), { immediate: true })
 
 function resetForm() {
   newName.value = ''
@@ -107,7 +107,7 @@ async function onCreate() {
   if (!newName.value.trim()) return
   creating.value = true
   try {
-    await store.create(workspaceId, newName.value.trim(), newReadme.value)
+    await store.create(workspaceId.value, newName.value.trim(), newReadme.value)
     showDialog.value = false
     resetForm()
     $q.notify({ type: 'positive', message: 'Collection created' })

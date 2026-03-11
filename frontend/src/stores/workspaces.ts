@@ -22,5 +22,10 @@ export const useWorkspacesStore = defineStore('workspaces', {
       this.workspaces.unshift(workspace)
       return workspace
     },
+
+    async delete(id: string) {
+      await workspacesApi.delete(id)
+      this.workspaces = this.workspaces.filter(w => w.id !== id)
+    },
   },
 })

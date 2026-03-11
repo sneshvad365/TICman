@@ -23,8 +23,15 @@
         bordered
         @click="$router.push(`/workspaces/${ws.id}`)"
       >
-        <q-card-section>
-          <div class="text-h6">{{ ws.name }}</div>
+        <q-card-section class="row items-center no-wrap">
+          <div class="text-h6 col ellipsis">{{ ws.name }}</div>
+          <q-btn
+            flat round dense
+            icon="delete"
+            color="grey-6"
+            size="sm"
+            @click.stop="confirmDelete(ws)"
+          />
         </q-card-section>
       </q-card>
     </div>
@@ -57,6 +64,7 @@
 import { ref, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { useWorkspacesStore } from 'stores/workspaces'
+import type { WorkspaceResponse } from 'src/api/workspaces'
 
 const $q = useQuasar()
 const store = useWorkspacesStore()
@@ -66,6 +74,22 @@ const newName = ref('')
 const creating = ref(false)
 
 onMounted(() => store.fetchAll())
+
+function confirmDelete(ws: WorkspaceResponse) {
+  $q.dialog({
+    title: 'Delete workspace',
+    message: `Delete "${ws.name}"? All collections and requests inside will be permanently deleted.`,
+    cancel: true,
+    ok: { label: 'Delete', color: 'negative', flat: true },
+  }).onOk(async () => {
+    try {
+      await store.delete(ws.id)
+      $q.notify({ type: 'positive', message: 'Workspace deleted' })
+    } catch (e) {
+      $q.notify({ type: 'negative', message: e instanceof Error ? e.message : 'Failed' })
+    }
+  })
+}
 
 async function onCreate() {
   if (!newName.value.trim()) return

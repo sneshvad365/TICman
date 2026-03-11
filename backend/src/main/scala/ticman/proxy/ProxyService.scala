@@ -1,8 +1,6 @@
-package ticman.services
+package ticman.proxy
 
-import ticman.db.ResponseHistoryRepository
-import ticman.models.{ProxyRequest, ProxyResponse}
-import upickle.default.*
+import ticman.request.ResponseHistoryRepository
 import java.net.URI
 import java.util.UUID
 

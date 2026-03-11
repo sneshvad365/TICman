@@ -12,4 +12,7 @@ export const workspacesApi = {
   create(name: string) {
     return api.post<WorkspaceResponse>('/api/workspaces', { name })
   },
+  delete(id: string) {
+    return api.delete<void>(`/api/workspaces/${id}`)
+  },
 }

@@ -1,7 +1,5 @@
-package ticman.services
+package ticman.collection
 
-import ticman.db.CollectionRepository
-import ticman.models.{Collection, CollectionResponse, CreateCollectionRequest}
 import java.util.UUID
 
 trait CollectionService:

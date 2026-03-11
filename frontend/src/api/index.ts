@@ -11,8 +11,8 @@ async function request<T>(
     body: body !== undefined ? JSON.stringify(body) : undefined,
   })
 
-  const data = await res.json()
-  if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`)
+  const data = res.status !== 204 ? await res.json() : undefined
+  if (!res.ok) throw new Error(data?.error ?? `HTTP ${res.status}`)
   return data as T
 }
 

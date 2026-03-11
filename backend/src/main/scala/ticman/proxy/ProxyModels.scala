@@ -1,4 +1,4 @@
-package ticman.models
+package ticman.proxy
 
 import upickle.default.*
 
@@ -15,13 +15,4 @@ case class ProxyResponse(
     headers: Map[String, String],
     body: String,
     durationMs: Long,
-) derives ReadWriter
-
-case class HistoryResponse(
-    id: String,
-    statusCode: Int,
-    headers: Map[String, String],
-    body: Option[String],
-    durationMs: Long,
-    executedAt: String,
 ) derives ReadWriter

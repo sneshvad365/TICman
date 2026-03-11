@@ -1,4 +1,4 @@
-package ticman.models
+package ticman
 
 import upickle.default.*
 

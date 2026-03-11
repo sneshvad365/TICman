@@ -65,7 +65,7 @@
     </q-splitter>
 
     <!-- Context menu -->
-    <q-menu v-model="menuOpen" :target="menuTarget" context-menu>
+    <q-menu v-if="menuTarget !== null" v-model="menuOpen" :target="menuTarget" context-menu>
       <q-list dense style="min-width: 140px">
         <q-item clickable v-close-popup @click="openEdit(menuRequest!)">
           <q-item-section avatar><q-icon name="edit" /></q-item-section>
