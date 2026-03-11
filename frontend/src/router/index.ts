@@ -7,7 +7,7 @@ import {
 } from 'vue-router'
 import routes from './routes'
 
-export default route(function (/* { store, ssrContext } */) {
+export default route(function () {
   const createHistory = process.env.SERVER
     ? createMemoryHistory
     : process.env.VUE_ROUTER_MODE === 'history'
@@ -20,14 +20,6 @@ export default route(function (/* { store, ssrContext } */) {
     history: createHistory(
       process.env.MODE === 'ssr' ? void 0 : process.env.VUE_ROUTER_BASE,
     ),
-  })
-
-  Router.beforeEach((to) => {
-    const accessToken = localStorage.getItem('accessToken')
-    const isPublic = to.meta.public === true
-
-    if (!accessToken && !isPublic) return '/login'
-    if (accessToken && (to.path === '/login' || to.path === '/register')) return '/'
   })
 
   return Router

@@ -6,7 +6,6 @@ import java.util.UUID
 case class HttpRequest(
     id: UUID,
     collectionId: UUID,
-    createdBy: UUID,
     name: String,
     method: String,
     urlTemplate: String,

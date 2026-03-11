@@ -25,7 +25,6 @@
       >
         <q-card-section>
           <div class="text-h6">{{ ws.name }}</div>
-          <q-badge :color="roleColor(ws.role)" class="q-mt-sm">{{ ws.role }}</q-badge>
         </q-card-section>
       </q-card>
     </div>
@@ -67,10 +66,6 @@ const newName = ref('')
 const creating = ref(false)
 
 onMounted(() => store.fetchAll())
-
-function roleColor(role: string) {
-  return role === 'owner' ? 'primary' : role === 'editor' ? 'teal' : 'grey'
-}
 
 async function onCreate() {
   if (!newName.value.trim()) return

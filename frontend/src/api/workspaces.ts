@@ -3,7 +3,6 @@ import { api } from './index'
 export interface WorkspaceResponse {
   id: string
   name: string
-  role: string
 }
 
 export const workspacesApi = {

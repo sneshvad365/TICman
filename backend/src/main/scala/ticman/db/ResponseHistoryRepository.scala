@@ -8,7 +8,6 @@ import java.util.UUID
 trait ResponseHistoryRepository:
   def save(
       requestId: UUID,
-      userId: UUID,
       statusCode: Int,
       headers: Map[String, String],
       body: Option[String],
@@ -20,7 +19,6 @@ class PostgresResponseHistoryRepository(dataSource: DataSource) extends Response
 
   override def save(
       requestId: UUID,
-      userId: UUID,
       statusCode: Int,
       headers: Map[String, String],
       body: Option[String],
@@ -29,14 +27,13 @@ class PostgresResponseHistoryRepository(dataSource: DataSource) extends Response
     val conn = dataSource.getConnection()
     try
       val stmt = conn.prepareStatement(
-        "INSERT INTO response_history (request_id, user_id, status_code, headers, body, duration_ms) VALUES (?, ?, ?, ?::jsonb, ?, ?)"
+        "INSERT INTO response_history (request_id, status_code, headers, body, duration_ms) VALUES (?, ?, ?::jsonb, ?, ?)"
       )
       stmt.setObject(1, requestId)
-      stmt.setObject(2, userId)
-      stmt.setInt(3, statusCode)
-      stmt.setString(4, write(headers))
-      stmt.setString(5, body.orNull)
-      stmt.setLong(6, durationMs)
+      stmt.setInt(2, statusCode)
+      stmt.setString(3, write(headers))
+      stmt.setString(4, body.orNull)
+      stmt.setLong(5, durationMs)
       stmt.executeUpdate()
       stmt.close()
     finally conn.close()
@@ -53,12 +50,12 @@ class PostgresResponseHistoryRepository(dataSource: DataSource) extends Response
       val buf = scala.collection.mutable.ArrayBuffer[HistoryResponse]()
       while rs.next() do
         buf += HistoryResponse(
-          id          = rs.getString("id"),
-          statusCode  = rs.getInt("status_code"),
-          headers     = read[Map[String, String]](rs.getString("headers")),
-          body        = Option(rs.getString("body")),
-          durationMs  = rs.getLong("duration_ms"),
-          executedAt  = rs.getString("executed_at"),
+          id         = rs.getString("id"),
+          statusCode = rs.getInt("status_code"),
+          headers    = read[Map[String, String]](rs.getString("headers")),
+          body       = Option(rs.getString("body")),
+          durationMs = rs.getLong("duration_ms"),
+          executedAt = rs.getString("executed_at"),
         )
       rs.close(); stmt.close()
       buf.toSeq

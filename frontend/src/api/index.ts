@@ -3,9 +3,7 @@ async function request<T>(
   path: string,
   body?: unknown,
 ): Promise<T> {
-  const accessToken = localStorage.getItem('accessToken')
   const headers: Record<string, string> = { 'Content-Type': 'application/json' }
-  if (accessToken) headers['Authorization'] = `Bearer ${accessToken}`
 
   const res = await fetch(path, {
     method,

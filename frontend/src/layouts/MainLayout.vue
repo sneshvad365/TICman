@@ -4,9 +4,6 @@
       <q-toolbar>
         <q-btn flat dense round icon="menu" @click="leftDrawerOpen = !leftDrawerOpen" />
         <q-toolbar-title>TICman</q-toolbar-title>
-        <q-btn flat round icon="logout" @click="logout">
-          <q-tooltip>Sign out</q-tooltip>
-        </q-btn>
       </q-toolbar>
     </q-header>
 
@@ -34,9 +31,6 @@
             </q-avatar>
           </q-item-section>
           <q-item-section>{{ ws.name }}</q-item-section>
-          <q-item-section side>
-            <q-badge :color="roleColor(ws.role)">{{ ws.role }}</q-badge>
-          </q-item-section>
         </q-item>
 
         <q-item v-if="workspacesStore.workspaces.length === 0 && !workspacesStore.loading">
@@ -53,21 +47,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from 'stores/auth'
 import { useWorkspacesStore } from 'stores/workspaces'
 
-const router = useRouter()
-const auth = useAuthStore()
 const workspacesStore = useWorkspacesStore()
 const leftDrawerOpen = ref(false)
-
-function roleColor(role: string) {
-  return role === 'owner' ? 'primary' : role === 'editor' ? 'teal' : 'grey'
-}
-
-function logout() {
-  auth.logout()
-  router.push('/login')
-}
 </script>

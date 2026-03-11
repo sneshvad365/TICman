@@ -13,3 +13,5 @@ out/
 .DS_Store
 *.class
 *.log
+.idea/
+frontend/target/

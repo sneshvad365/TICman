@@ -22,6 +22,3 @@ case class CreateCollectionRequest(
     readme: String = "",
 ) derives ReadWriter
 
-enum PermissionError:
-  case NotMember
-  case Forbidden

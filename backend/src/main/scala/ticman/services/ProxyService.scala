@@ -22,7 +22,7 @@ class ProxyService(historyRepo: ResponseHistoryRepository):
     "^\\[::1\\]$".r,
   )
 
-  def send(req: ProxyRequest, userId: UUID): Either[String, ProxyResponse] =
+  def send(req: ProxyRequest): Either[String, ProxyResponse] =
     val host =
       try URI(req.url).getHost
       catch case _ => return Left(s"Invalid URL: ${req.url}")
@@ -48,7 +48,7 @@ class ProxyService(historyRepo: ResponseHistoryRepository):
       // Save to history if a requestId was provided
       req.requestId.foreach { rid =>
         try
-          historyRepo.save(UUID.fromString(rid), userId, response.statusCode, respHeaders, bodyOpt, duration)
+          historyRepo.save(UUID.fromString(rid), response.statusCode, respHeaders, bodyOpt, duration)
         catch case _ => () // don't fail the proxy call if history save fails
       }
 

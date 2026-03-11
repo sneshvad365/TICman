@@ -1,19 +1,6 @@
 import { RouteRecordRaw } from 'vue-router'
 
 const routes: RouteRecordRaw[] = [
-  // Auth pages (no layout shell)
-  {
-    path: '/login',
-    component: () => import('pages/LoginPage.vue'),
-    meta: { public: true },
-  },
-  {
-    path: '/register',
-    component: () => import('pages/RegisterPage.vue'),
-    meta: { public: true },
-  },
-
-  // App pages (with sidebar layout)
   {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
