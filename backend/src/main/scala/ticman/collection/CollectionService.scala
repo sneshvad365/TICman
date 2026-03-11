@@ -1,22 +1,22 @@
 package ticman.collection
 
-import java.util.UUID
+import ticman.{CollectionId, WorkspaceId, CollectionName}
 
 trait CollectionService:
-  def list(workspaceId: UUID): Seq[CollectionResponse]
-  def create(workspaceId: UUID, req: CreateCollectionRequest): CollectionResponse
-  def delete(collectionId: UUID): Unit
+  def list(workspaceId: WorkspaceId): Seq[CollectionResponse]
+  def create(workspaceId: WorkspaceId, req: CreateCollectionRequest): CollectionResponse
+  def delete(collectionId: CollectionId): Unit
 
 class CollectionServiceImpl(collectionRepo: CollectionRepository) extends CollectionService:
 
-  override def list(workspaceId: UUID): Seq[CollectionResponse] =
+  override def list(workspaceId: WorkspaceId): Seq[CollectionResponse] =
     collectionRepo.findByWorkspaceId(workspaceId).map(toResponse)
 
-  override def create(workspaceId: UUID, req: CreateCollectionRequest): CollectionResponse =
-    toResponse(collectionRepo.create(workspaceId, req.name.trim, req.readme))
+  override def create(workspaceId: WorkspaceId, req: CreateCollectionRequest): CollectionResponse =
+    toResponse(collectionRepo.create(workspaceId, CollectionName(req.name.trim), req.readme))
 
-  override def delete(collectionId: UUID): Unit =
+  override def delete(collectionId: CollectionId): Unit =
     collectionRepo.delete(collectionId)
 
   private def toResponse(c: Collection): CollectionResponse =
-    CollectionResponse(c.id.toString, c.workspaceId.toString, c.name, c.readme)
+    CollectionResponse(c.id, c.workspaceId, c.name, c.readme)

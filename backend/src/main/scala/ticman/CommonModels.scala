@@ -2,4 +2,4 @@ package ticman
 
 import upickle.default.*
 
-case class ErrorResponse(error: String, code: String) derives ReadWriter
+case class ErrorResponse(error: ErrorMessage, code: ErrorCode) derives ReadWriter

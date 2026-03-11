@@ -1,26 +1,26 @@
 package ticman.request
 
-import java.util.UUID
+import ticman.{RequestId, CollectionId}
 
 trait RequestService:
-  def list(collectionId: UUID): Seq[RequestResponse]
-  def create(collectionId: UUID, req: SaveRequestRequest): RequestResponse
-  def update(requestId: UUID, req: SaveRequestRequest): RequestResponse
-  def delete(requestId: UUID): Unit
+  def list(collectionId: CollectionId): Seq[RequestResponse]
+  def create(collectionId: CollectionId, req: SaveRequestRequest): RequestResponse
+  def update(requestId: RequestId, req: SaveRequestRequest): RequestResponse
+  def delete(requestId: RequestId): Unit
 
 class RequestServiceImpl(requestRepo: RequestRepository) extends RequestService:
 
-  override def list(collectionId: UUID): Seq[RequestResponse] =
+  override def list(collectionId: CollectionId): Seq[RequestResponse] =
     requestRepo.findByCollectionId(collectionId).map(toResponse)
 
-  override def create(collectionId: UUID, req: SaveRequestRequest): RequestResponse =
+  override def create(collectionId: CollectionId, req: SaveRequestRequest): RequestResponse =
     toResponse(requestRepo.create(collectionId, req))
 
-  override def update(requestId: UUID, req: SaveRequestRequest): RequestResponse =
+  override def update(requestId: RequestId, req: SaveRequestRequest): RequestResponse =
     toResponse(requestRepo.update(requestId, req))
 
-  override def delete(requestId: UUID): Unit =
+  override def delete(requestId: RequestId): Unit =
     requestRepo.delete(requestId)
 
   private def toResponse(r: HttpRequest): RequestResponse =
-    RequestResponse(r.id.toString, r.collectionId.toString, r.name, r.method, r.urlTemplate, r.headers, r.body)
+    RequestResponse(r.id, r.collectionId, r.name, r.method, r.urlTemplate, r.headers, r.body)

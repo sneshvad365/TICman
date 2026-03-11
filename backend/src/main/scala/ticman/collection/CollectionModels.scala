@@ -2,6 +2,7 @@ package ticman.collection
 
 import scalasql.Table
 import ticman.db.TypeMappers.given
+import ticman.{CollectionId, WorkspaceId, CollectionName, CollectionReadme, given}
 import upickle.default.*
 import java.util.UUID
 
@@ -18,25 +19,25 @@ object CollectionRow extends Table[CollectionRow]:
   override def tableName: String = "collections"
 
   def toDomain(row: CollectionRow[[T] =>> T]): Collection =
-    Collection(row.id, row.workspaceId, row.name, row.readme)
+    Collection(CollectionId(row.id), WorkspaceId(row.workspaceId), CollectionName(row.name), CollectionReadme(row.readme))
 
 // --- Domain models ---
 
 case class Collection(
-    id: UUID,
-    workspaceId: UUID,
-    name: String,
-    readme: String,
+    id: CollectionId,
+    workspaceId: WorkspaceId,
+    name: CollectionName,
+    readme: CollectionReadme,
 )
 
 case class CollectionResponse(
-    id: String,
-    workspaceId: String,
-    name: String,
-    readme: String,
+    id: CollectionId,
+    workspaceId: WorkspaceId,
+    name: CollectionName,
+    readme: CollectionReadme,
 ) derives ReadWriter
 
 case class CreateCollectionRequest(
-    name: String,
-    readme: String = "",
+    name: CollectionName,
+    readme: CollectionReadme = CollectionReadme(""),
 ) derives ReadWriter

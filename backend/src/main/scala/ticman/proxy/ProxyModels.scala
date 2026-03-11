@@ -1,18 +1,19 @@
 package ticman.proxy
 
+import ticman.{RequestId, HttpMethod, ProxyUrl, RequestBody, ResponseBody, StatusCode, DurationMs, given}
 import upickle.default.*
 
 case class ProxyRequest(
-    method: String,
-    url: String,
+    method: HttpMethod,
+    url: ProxyUrl,
     headers: Map[String, String] = Map.empty,
-    body: Option[String] = None,
-    requestId: Option[String] = None,
+    body: Option[RequestBody] = None,
+    requestId: Option[RequestId] = None,
 ) derives ReadWriter
 
 case class ProxyResponse(
-    statusCode: Int,
+    statusCode: StatusCode,
     headers: Map[String, String],
-    body: String,
-    durationMs: Long,
+    body: ResponseBody,
+    durationMs: DurationMs,
 ) derives ReadWriter

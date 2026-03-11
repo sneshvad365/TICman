@@ -2,6 +2,7 @@ package ticman.workspace
 
 import scalasql.Table
 import ticman.db.TypeMappers.given
+import ticman.{WorkspaceId, WorkspaceName, given}
 import upickle.default.*
 import java.util.UUID
 
@@ -16,12 +17,12 @@ object WorkspaceRow extends Table[WorkspaceRow]:
   override def tableName: String = "workspaces"
 
   def toDomain(row: WorkspaceRow[[T] =>> T]): Workspace =
-    Workspace(row.id, row.name)
+    Workspace(WorkspaceId(row.id), WorkspaceName(row.name))
 
 // --- Domain models ---
 
-case class Workspace(id: UUID, name: String)
+case class Workspace(id: WorkspaceId, name: WorkspaceName)
 
-case class WorkspaceResponse(id: String, name: String) derives ReadWriter
+case class WorkspaceResponse(id: WorkspaceId, name: WorkspaceName) derives ReadWriter
 
-case class CreateWorkspaceRequest(name: String) derives ReadWriter
+case class CreateWorkspaceRequest(name: WorkspaceName) derives ReadWriter

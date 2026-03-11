@@ -3,26 +3,26 @@ package ticman.request
 import scalasql.DbClient
 import scalasql.PostgresDialect.*
 import ticman.db.TypeMappers.given
-import java.util.UUID
+import ticman.{RequestId, StatusCode, DurationMs, given}
 
 trait ResponseHistoryRepository:
   def save(
-      requestId: UUID,
-      statusCode: Int,
+      requestId: RequestId,
+      statusCode: StatusCode,
       headers: Map[String, String],
       body: Option[String],
-      durationMs: Long,
+      durationMs: DurationMs,
   ): Unit
-  def findByRequestId(requestId: UUID, limit: Int = 20): Seq[HistoryResponse]
+  def findByRequestId(requestId: RequestId, limit: Int = 20): Seq[HistoryResponse]
 
 class PostgresResponseHistoryRepository(db: DbClient.DataSource) extends ResponseHistoryRepository:
 
   override def save(
-      requestId: UUID,
-      statusCode: Int,
+      requestId: RequestId,
+      statusCode: StatusCode,
       headers: Map[String, String],
       body: Option[String],
-      durationMs: Long,
+      durationMs: DurationMs,
   ): Unit =
     db.transaction { implicit tx =>
       tx.run(
@@ -36,7 +36,7 @@ class PostgresResponseHistoryRepository(db: DbClient.DataSource) extends Respons
       )
     }
 
-  override def findByRequestId(requestId: UUID, limit: Int = 20): Seq[HistoryResponse] =
+  override def findByRequestId(requestId: RequestId, limit: Int = 20): Seq[HistoryResponse] =
     db.transaction { implicit tx =>
       tx.run(ResponseHistoryRow.select.filter(_.requestId === requestId))
         .sortBy(_.executedAt)

@@ -1,20 +1,20 @@
 package ticman.workspace
 
-import java.util.UUID
+import ticman.{WorkspaceId, WorkspaceName}
 
 trait WorkspaceService:
   def list(): Seq[WorkspaceResponse]
   def create(req: CreateWorkspaceRequest): WorkspaceResponse
-  def delete(id: UUID): Unit
+  def delete(id: WorkspaceId): Unit
 
 class WorkspaceServiceImpl(workspaceRepo: WorkspaceRepository) extends WorkspaceService:
 
   override def list(): Seq[WorkspaceResponse] =
-    workspaceRepo.findAll().map(ws => WorkspaceResponse(ws.id.toString, ws.name))
+    workspaceRepo.findAll().map(ws => WorkspaceResponse(ws.id, ws.name))
 
   override def create(req: CreateWorkspaceRequest): WorkspaceResponse =
-    val ws = workspaceRepo.create(req.name.trim)
-    WorkspaceResponse(ws.id.toString, ws.name)
+    val ws = workspaceRepo.create(WorkspaceName(req.name.trim))
+    WorkspaceResponse(ws.id, ws.name)
 
-  override def delete(id: UUID): Unit =
+  override def delete(id: WorkspaceId): Unit =
     workspaceRepo.delete(id)

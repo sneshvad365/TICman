@@ -1,7 +1,7 @@
 package ticman.workspace
 
 import cask.*
-import ticman.ErrorResponse
+import ticman.{ErrorResponse, ErrorMessage, ErrorCode, WorkspaceId, given}
 import upickle.default.*
 import scala.util.{Try, Success, Failure}
 import java.util.UUID
@@ -14,7 +14,7 @@ class WorkspaceRoutes(val workspaceService: WorkspaceService) extends Routes:
   def list(request: Request): Response[String] =
     Try(workspaceService.list()) match
       case Success(ws) => Response(write(ws), 200, headers = jsonHeader)
-      case Failure(e)  => Response(write(ErrorResponse(e.getMessage, "INTERNAL_ERROR")), 500, headers = jsonHeader)
+      case Failure(e)  => Response(write(ErrorResponse(ErrorMessage(e.getMessage), ErrorCode("INTERNAL_ERROR"))), 500, headers = jsonHeader)
 
   @post("/api/workspaces")
   def create(request: Request): Response[String] =
@@ -23,12 +23,12 @@ class WorkspaceRoutes(val workspaceService: WorkspaceService) extends Routes:
       workspaceService.create(req)
     } match
       case Success(workspace) => Response(write(workspace), 201, headers = jsonHeader)
-      case Failure(e)         => Response(write(ErrorResponse(e.getMessage, "INTERNAL_ERROR")), 500, headers = jsonHeader)
+      case Failure(e)         => Response(write(ErrorResponse(ErrorMessage(e.getMessage), ErrorCode("INTERNAL_ERROR"))), 500, headers = jsonHeader)
 
   @delete("/api/workspaces/:id")
   def deleteWorkspace(id: String, request: Request): Response[String] =
-    Try(workspaceService.delete(UUID.fromString(id))) match
+    Try(workspaceService.delete(WorkspaceId(UUID.fromString(id)))) match
       case Success(_) => Response("", 204, headers = jsonHeader)
-      case Failure(e) => Response(write(ErrorResponse(e.getMessage, "INTERNAL_ERROR")), 500, headers = jsonHeader)
+      case Failure(e) => Response(write(ErrorResponse(ErrorMessage(e.getMessage), ErrorCode("INTERNAL_ERROR"))), 500, headers = jsonHeader)
 
   initialize()
