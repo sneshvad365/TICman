@@ -1,15 +1,18 @@
 package ticman.db
 
 import com.zaxxer.hikari.{HikariConfig, HikariDataSource}
+import org.flywaydb.core.Flyway
 import scalasql.DbClient
 import scalasql.core.Config
 import scalasql.PostgresDialect.given
 
 object Database:
+  private val url      = "jdbc:postgresql://localhost:5433/ticman"
+  private val user     = "ticman"
+  private val password = "ticman"
+
   def fromEnv(): DbClient.DataSource =
-    val url      = sys.env.getOrElse("DATABASE_URL", "jdbc:postgresql://localhost:5433/ticman")
-    val user     = sys.env.getOrElse("DATABASE_USER", "ticman")
-    val password = sys.env.getOrElse("DATABASE_PASSWORD", "ticman")
+    migrate()
 
     val hikariConfig = HikariConfig()
     hikariConfig.setJdbcUrl(url)
@@ -23,6 +26,13 @@ object Database:
       config = new Config { override def columnNameMapper(v: String) = camelToSnake(v) },
       listeners = Seq.empty,
     )
+
+  private def migrate(): Unit =
+    Flyway.configure()
+      .dataSource(url, user, password)
+      .locations("classpath:db/migration")
+      .load()
+      .migrate()
 
   private def camelToSnake(s: String): String =
     "[A-Z]".r.replaceAllIn(s, m => s"_${m.group(0).toLowerCase}")
