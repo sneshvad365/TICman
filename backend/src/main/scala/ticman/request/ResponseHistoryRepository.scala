@@ -3,7 +3,7 @@ package ticman.request
 import scalasql.DbClient
 import scalasql.PostgresDialect.*
 import ticman.db.TypeMappers.given
-import ticman.{RequestId, StatusCode, DurationMs, given}
+import ticman.{RequestId, HistoryId, StatusCode, DurationMs, given}
 
 trait ResponseHistoryRepository:
   def save(
@@ -14,6 +14,7 @@ trait ResponseHistoryRepository:
       durationMs: DurationMs,
   ): Unit
   def findByRequestId(requestId: RequestId, limit: Int = 20): Seq[HistoryResponse]
+  def delete(id: HistoryId): Unit
 
 class PostgresResponseHistoryRepository(db: DbClient.DataSource) extends ResponseHistoryRepository:
 
@@ -43,4 +44,9 @@ class PostgresResponseHistoryRepository(db: DbClient.DataSource) extends Respons
         .reverse
         .take(limit)
         .map(ResponseHistoryRow.toDomain)
+    }
+
+  override def delete(id: HistoryId): Unit =
+    db.transaction { implicit tx =>
+      tx.run(ResponseHistoryRow.delete(_.id === id))
     }

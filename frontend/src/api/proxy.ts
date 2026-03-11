@@ -30,4 +30,8 @@ export const proxyApi = {
   history(requestId: string) {
     return api.get<HistoryEntry[]>(`/api/requests/${requestId}/history`)
   },
+
+  deleteHistory(id: string) {
+    return api.delete<void>(`/api/history/${id}`)
+  },
 }

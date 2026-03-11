@@ -13,6 +13,7 @@ lazy val root = project
     // Run settings
     Compile / mainClass := Some("ticman.Main"),
     fork                := true,
+    javaOptions += "-Djava.util.logging.config.file=src/main/resources/logging.properties",
 
     // Dependencies
     libraryDependencies ++= Seq(

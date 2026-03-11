@@ -33,93 +33,76 @@
 
       <q-separator />
 
-      <!-- Error -->
-      <q-banner v-if="proxy.error" class="bg-red-1 text-red-9 q-ma-md rounded-borders">
-        <template #avatar><q-icon name="error" /></template>
-        {{ proxy.error }}
-      </q-banner>
+      <!-- Tabs: always visible when a request is selected -->
+      <q-tabs v-model="tab" dense align="left" class="q-px-md" indicator-color="primary">
+        <q-tab name="body" label="Body" />
+        <q-tab name="headers" label="Response Headers" />
+        <q-tab name="history" label="History" />
+      </q-tabs>
+      <q-separator />
 
-      <!-- Response -->
-      <div v-if="proxy.response" class="col column overflow-hidden">
-        <!-- Status line -->
-        <div class="row items-center q-px-md q-py-sm q-gutter-sm">
-          <q-badge :color="statusColor(proxy.response.statusCode)" class="text-weight-bold" style="font-size: 0.85rem">
-            {{ proxy.response.statusCode }}
-          </q-badge>
-          <span class="text-grey-6 text-caption">{{ statusText(proxy.response.statusCode) }}</span>
-          <q-space />
-          <q-chip dense icon="timer" color="grey-3" text-color="grey-8">
-            {{ proxy.response.durationMs }} ms
-          </q-chip>
-          <q-chip dense icon="data_usage" color="grey-3" text-color="grey-8">
-            {{ bodySize(proxy.response.body) }}
-          </q-chip>
-        </div>
-
-        <!-- Tabs: Body / Headers / History -->
-        <q-tabs v-model="tab" dense align="left" class="q-px-md" indicator-color="primary">
-          <q-tab name="body" label="Body" />
-          <q-tab name="headers" label="Response Headers" />
-          <q-tab name="history" label="History" />
-        </q-tabs>
-        <q-separator />
-
-        <q-tab-panels v-model="tab" class="col overflow-auto">
-          <!-- Body panel -->
-          <q-tab-panel name="body" class="q-pa-none">
-            <pre class="response-body">{{ prettyBody(proxy.response.body) }}</pre>
-          </q-tab-panel>
-
-          <!-- Headers panel -->
-          <q-tab-panel name="headers">
-            <q-list dense>
-              <q-item v-for="(val, key) in proxy.response.headers" :key="key" dense>
-                <q-item-section>
-                  <q-item-label class="text-weight-medium">{{ key }}</q-item-label>
-                </q-item-section>
-                <q-item-section class="text-mono text-caption text-grey-7">{{ val }}</q-item-section>
-              </q-item>
-            </q-list>
-          </q-tab-panel>
-
-          <!-- History panel -->
-          <q-tab-panel name="history" class="q-pa-none">
-            <div v-if="proxy.loadingHistory" class="flex flex-center q-pa-lg">
-              <q-spinner color="primary" />
+      <q-tab-panels v-model="tab" class="col overflow-auto">
+        <!-- Body panel -->
+        <q-tab-panel name="body" class="q-pa-none">
+          <q-banner v-if="proxy.error" class="bg-red-1 text-red-9 q-ma-md rounded-borders">
+            <template #avatar><q-icon name="error" /></template>
+            {{ proxy.error }}
+          </q-banner>
+          <template v-if="proxy.response">
+            <div class="row items-center q-px-md q-py-sm q-gutter-sm">
+              <q-badge :color="statusColor(proxy.response.statusCode)" class="text-weight-bold" style="font-size: 0.85rem">
+                {{ proxy.response.statusCode }}
+              </q-badge>
+              <span class="text-grey-6 text-caption">{{ statusText(proxy.response.statusCode) }}</span>
+              <q-space />
+              <q-chip dense icon="timer" color="grey-3" text-color="grey-8">{{ proxy.response.durationMs }} ms</q-chip>
+              <q-chip dense icon="data_usage" color="grey-3" text-color="grey-8">{{ bodySize(proxy.response.body) }}</q-chip>
             </div>
-            <q-list v-else-if="proxy.history.length" dense separator>
-              <q-item
-                v-for="entry in proxy.history"
-                :key="entry.id"
-                clickable
-                v-ripple
-                @click="showHistoryEntry(entry)"
-              >
-                <q-item-section avatar>
-                  <q-badge :color="statusColor(entry.statusCode)">{{ entry.statusCode }}</q-badge>
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label class="text-caption text-grey-6">{{ formatDate(entry.executedAt) }}</q-item-label>
-                </q-item-section>
-                <q-item-section side>
-                  <q-chip dense icon="timer" color="grey-2" text-color="grey-7" size="sm">
-                    {{ entry.durationMs }} ms
-                  </q-chip>
-                </q-item-section>
-              </q-item>
-            </q-list>
-            <div v-else class="text-center text-grey-5 q-pa-xl">No history yet</div>
-          </q-tab-panel>
-        </q-tab-panels>
-      </div>
+            <pre class="response-body">{{ prettyBody(proxy.response.body) }}</pre>
+          </template>
+          <div v-else-if="!proxy.sending && !proxy.error" class="flex flex-center text-grey-4 q-pa-xl">
+            <div class="text-center">
+              <q-icon name="north_east" size="3rem" />
+              <div class="q-mt-sm">Hit Send to run the request</div>
+            </div>
+          </div>
+        </q-tab-panel>
 
-      <!-- No response yet -->
-      <div v-else-if="!proxy.sending && !proxy.error" class="col flex flex-center text-grey-4">
-        <div class="text-center">
-          <q-icon name="north_east" size="3rem" />
-          <div class="q-mt-sm">Hit Send to run the request</div>
-        </div>
-      </div>
+        <!-- Response Headers panel -->
+        <q-tab-panel name="headers">
+          <q-list v-if="proxy.response" dense>
+            <q-item v-for="(val, key) in proxy.response.headers" :key="key" dense>
+              <q-item-section>
+                <q-item-label class="text-weight-medium">{{ key }}</q-item-label>
+              </q-item-section>
+              <q-item-section class="text-mono text-caption text-grey-7">{{ val }}</q-item-section>
+            </q-item>
+          </q-list>
+          <div v-else class="text-center text-grey-4 q-pa-xl">No response yet</div>
+        </q-tab-panel>
+
+        <!-- History panel -->
+        <q-tab-panel name="history" class="q-pa-none">
+          <div v-if="proxy.loadingHistory" class="flex flex-center q-pa-lg">
+            <q-spinner color="primary" />
+          </div>
+          <q-list v-else-if="proxy.history.length" dense separator>
+            <q-item v-for="entry in proxy.history" :key="entry.id" clickable v-ripple @click="showHistoryEntry(entry)">
+              <q-item-section avatar>
+                <q-badge :color="statusColor(entry.statusCode)">{{ entry.statusCode }}</q-badge>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label class="text-caption text-grey-6">{{ formatDate(entry.executedAt) }}</q-item-label>
+              </q-item-section>
+              <q-item-section side class="row items-center no-wrap">
+                <q-chip dense icon="timer" color="grey-2" text-color="grey-7" size="sm">{{ entry.durationMs }} ms</q-chip>
+                <q-btn flat round dense icon="delete" color="grey-5" size="sm" @click.stop="confirmDeleteHistory(entry)" />
+              </q-item-section>
+            </q-item>
+          </q-list>
+          <div v-else class="text-center text-grey-5 q-pa-xl">No history yet</div>
+        </q-tab-panel>
+      </q-tab-panels>
     </template>
 
     <!-- History entry dialog -->
@@ -143,6 +126,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { useQuasar } from 'quasar'
 import { useProxyStore } from 'stores/proxy'
 import type { RequestResponse } from 'src/api/requests'
 import type { HistoryEntry } from 'src/api/proxy'
@@ -151,6 +135,7 @@ const props = defineProps<{ request: RequestResponse | null }>()
 defineEmits<{ send: [req: RequestResponse]; edit: [req: RequestResponse] }>()
 
 const proxy = useProxyStore()
+const $q = useQuasar()
 const tab = ref('body')
 const historyDialog = ref(false)
 const selectedEntry = ref<HistoryEntry | null>(null)
@@ -194,13 +179,27 @@ function bodySize(body: string) {
 
 function formatDate(ts: string) {
   if (!ts) return ''
-  try { return new Date(ts.replace(' ', 'T')).toLocaleString() }
-  catch { return ts }
+  return new Date(ts).toLocaleString()
 }
 
 function showHistoryEntry(entry: HistoryEntry) {
   selectedEntry.value = entry
   historyDialog.value = true
+}
+
+function confirmDeleteHistory(entry: HistoryEntry) {
+  $q.dialog({
+    title: 'Delete history entry',
+    message: `Delete this entry from ${formatDate(entry.executedAt)}?`,
+    cancel: true,
+    ok: { label: 'Delete', color: 'negative', flat: true },
+  }).onOk(async () => {
+    try {
+      await proxy.deleteHistory(entry.id)
+    } catch (e) {
+      $q.notify({ type: 'negative', message: e instanceof Error ? e.message : 'Failed' })
+    }
+  })
 }
 </script>
 

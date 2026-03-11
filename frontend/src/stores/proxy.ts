@@ -42,6 +42,11 @@ export const useProxyStore = defineStore('proxy', {
       }
     },
 
+    async deleteHistory(id: string) {
+      await proxyApi.deleteHistory(id)
+      this.history = this.history.filter(e => e.id !== id)
+    },
+
     clear() {
       this.response = null
       this.history = []

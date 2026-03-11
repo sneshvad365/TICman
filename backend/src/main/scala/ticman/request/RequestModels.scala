@@ -5,6 +5,7 @@ import ticman.db.TypeMappers.given
 import ticman.{RequestId, CollectionId, HistoryId, RequestName, HttpMethod, UrlTemplate, RequestBody, ResponseBody, StatusCode, DurationMs, ExecutedAt, given}
 import upickle.default.*
 import java.util.UUID
+import java.time.Instant
 
 // --- ScalaSql table classes + converters ---
 
@@ -39,7 +40,7 @@ case class ResponseHistoryRow[T[_]](
     headers: T[Map[String, String]],
     body: T[Option[String]],
     durationMs: T[Long],
-    executedAt: T[String],
+    executedAt: T[Instant],
 )
 
 object ResponseHistoryRow extends Table[ResponseHistoryRow]:
@@ -52,7 +53,7 @@ object ResponseHistoryRow extends Table[ResponseHistoryRow]:
       row.headers,
       row.body.map(ResponseBody(_)),
       DurationMs(row.durationMs),
-      ExecutedAt(row.executedAt),
+      ExecutedAt(row.executedAt.toString),
     )
 
 // --- Domain models ---

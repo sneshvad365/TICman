@@ -19,6 +19,7 @@ object Database:
     hikariConfig.setUsername(user)
     hikariConfig.setPassword(password)
     hikariConfig.setMaximumPoolSize(10)
+    hikariConfig.setConnectionInitSql("SET search_path = ticman")
     val ds = HikariDataSource(hikariConfig)
 
     DbClient.DataSource(
@@ -30,6 +31,7 @@ object Database:
   private def migrate(): Unit =
     Flyway.configure()
       .dataSource(url, user, password)
+      .schemas("ticman")
       .locations("classpath:db/migration")
       .load()
       .migrate()
